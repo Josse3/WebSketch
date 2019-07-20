@@ -1,0 +1,15 @@
+{
+  "name": "websketch",
+  "version": "1.0.0",
+  "description": "A tool used to sketch websites before coding",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Josse Cottenier",
+  "license": "ISC",
+  "dependencies": {
+    "@vue/cli": "^3.9.3",
+    "express": "^4.17.1"
+  }
+}
