@@ -1,7 +1,7 @@
 <template>
   <div class="drawing">
-    <Toolbar />
-    <div class="canvas" v-on:select-tool="() => alert('select')"></div>
+    <Toolbar v-on:select-tool="handleToolSelect" />
+    <div class="canvas" v-on:mousedown="handleCanvasMouseDown" />
   </div>
 </template>
 
@@ -12,8 +12,29 @@ export default {
   components: {
     Toolbar
   },
+  data() {
+    return {
+      currentTool: null,
+      boxes: 0
+    };
+  },
   methods: {
-    useTool: () => alert("selected")
+    handleToolSelect(tool) {
+      this.currentTool = tool;
+    },
+    handleCanvasMouseDown(event) {
+      if (this.currentTool) {
+        if (this.currentTool === "box") {
+          const container = event.target.getBoundingClientRect();
+          const box = document.createElement("div");
+          box.className = "drawing-box";
+          box.style.left = `${event.clientX - container.x}px`;
+          box.style.top = `${event.clientY - container.y - this.boxes * 5}px`;
+          event.target.appendChild(box);
+          this.boxes++;
+        }
+      }
+    }
   }
 };
 </script>
@@ -32,5 +53,14 @@ export default {
   width: 90%;
   height: 90%;
   background-color: rgb(70, 70, 235);
+}
+</style>
+
+<style>
+.drawing .canvas .drawing-box {
+  height: 5px;
+  width: 5px;
+  background-color: red;
+  position: relative;
 }
 </style>
