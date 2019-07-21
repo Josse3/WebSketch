@@ -1,6 +1,6 @@
 <template>
   <div class="toolbar">
-    <p v-for="tool in tools" v-bind:key="tool.id" v-on:click="selectTool">
+    <p v-for="tool in tools" v-bind:key="tool.id" v-on:click="selectTool(tool.id)">
       <i :class="tool.icon" />
     </p>
   </div>
@@ -18,7 +18,9 @@ export default {
     };
   },
   methods: {
-    selectTool: () => this.$parent.$emit("select-tool")
+    selectTool(tool) {
+      this.$emit("select-tool", tool);
+    }
   }
 };
 </script>
