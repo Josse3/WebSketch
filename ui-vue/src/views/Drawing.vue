@@ -1,7 +1,12 @@
 <template>
   <div class="drawing">
     <Toolbar v-on:select-tool="handleToolSelect" />
-    <div class="canvas" v-on:mousedown="handleCanvasMouseDown" />
+    <div
+      class="canvas"
+      v-on:mousedown="handleCanvasMouseDown"
+      v-on:mouseup="handleCanvasMouseUp"
+      v-on:mousemove="handleCanvasMouseMove"
+    />
   </div>
 </template>
 
@@ -14,8 +19,11 @@ export default {
   },
   data() {
     return {
-      currentTool: null,
-      boxes: 0
+      currentTool: null, // current method on the toolbar
+      drawingElement: false, // boolean defining whether or not an element is being drawn
+      currentBox: null, // HTML object of the current element being drawn
+      currentElementContainer: null, // Container of the current element to calculate coordinates
+      occupiedY: 0 // Due to HTML nature, the elements get pushed further and further down when more appear. This variable tracks how much, to oppose it.
     };
   },
   methods: {
@@ -25,14 +33,50 @@ export default {
     handleCanvasMouseDown(event) {
       if (this.currentTool) {
         if (this.currentTool === "box") {
-          const container = event.target.getBoundingClientRect();
+          this.drawingElement = true;
+          // Creating drawn element and its container
+          this.currentElementContainer = event.target.getBoundingClientRect();
           const box = document.createElement("div");
           box.className = "drawing-box";
-          box.style.left = `${event.clientX - container.x}px`;
-          box.style.top = `${event.clientY - container.y - this.boxes * 5}px`;
-          event.target.appendChild(box);
-          this.boxes++;
+          // Calculating coordinates and passing them in as left/top values on a position=relative div
+          box.style.left = `${event.clientX -
+            this.currentElementContainer.x}px`;
+          box.style.top = `${event.clientY -
+            this.currentElementContainer.y -
+            this.occupiedY}px`;
+          // Saving created element to data()
+          this.currentBox = box;
         }
+      }
+    },
+    handleCanvasMouseMove(event) {
+      if (this.drawingElement) {
+        const boxX = Number(this.currentBox.style.left.replace("px", ""));
+        const boxY = Number(this.currentBox.style.top.replace("px", ""));
+        // Calculating mouse position compared to the first mouse position as width and height
+        const width =
+          event.clientX - this.currentElementContainer.x - boxX + "px";
+        const height =
+          event.clientY -
+          this.currentElementContainer.y -
+          boxY -
+          this.occupiedY +
+          "px";
+        this.currentBox.style.width = width;
+        this.currentBox.style.height = height;
+      }
+    },
+    handleCanvasMouseUp(event) {
+      if (this.drawingElement) {
+        event.target.appendChild(this.currentBox);
+        // Updating the occupiedY value with the box height
+        const boxHeight = Number(
+          this.currentBox.style.height.replace("px", "")
+        );
+        this.occupiedY += boxHeight;
+        // Reset
+        this.drawingElement = false;
+        this.currentBox = null;
       }
     }
   }
@@ -59,7 +103,6 @@ export default {
 <style>
 .drawing .canvas .drawing-box {
   height: 5px;
-  width: 5px;
   background-color: red;
   position: relative;
 }
