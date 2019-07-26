@@ -14,13 +14,17 @@
         :left="boxObj.left"
         :width="boxObj.width"
         :height="boxObj.height"
+        :color="boxObj.color"
+        :id="boxObj.id"
         @show-contextmenu="handleContextMenuShow"
       />
       <ContextMenu
         v-if="contextMenuShown"
         :x="this.contextMenuProps.x"
         :y="this.contextMenuProps.y"
-        :content="this.contextMenuContent"
+        :content="this.contextMenuProps.target"
+        :drawingboxId="this.contextMenuProps.id"
+        @color-change="this.handleDrawingBoxColorChange"
       />
     </div>
   </div>
@@ -30,9 +34,6 @@
 import Toolbar from "@/components/Toolbar.vue";
 import DrawingBox from "@/components/DrawingBox.vue";
 import ContextMenu from "@/components/ContextMenu.vue";
-
-// Possible ContextMenu contents
-import Box from "@/components/ContextMenu-contents/Box.vue";
 
 export default {
   name: "drawing",
@@ -51,8 +52,7 @@ export default {
       drawingBoxes: [], // Array of drawn boxes
       currentPreviewBox: null, // HTML object of the current preview box
       contextMenuShown: false, // Boolean defining wheather or not the context menu is shown
-      contextMenuProps: {}, // Object containing x and y coordinates of the context menu
-      contextMenuContent: null // Component defining the content of the displayed context menu
+      contextMenuProps: {} // Object containing x and y coordinates as well as content of the context menu
     };
   },
   methods: {
@@ -60,7 +60,7 @@ export default {
       this.currentTool = tool;
     },
     handleCanvasMouseDown(event) {
-      if (this.currentTool && event.which === 1) {
+      if (this.currentTool && event.which === 1 && !this.contextMenuShown) {
         if (this.currentTool === "box") {
           this.drawingElement = true;
           // Creating drawn element and its container (to calculate coordinates)
@@ -87,6 +87,8 @@ export default {
           // Saving created element to data()
           this.currentBoxProps = boxProps;
         }
+      } else if (this.contextMenuShown && event.path.length <= 8) {
+        this.contextMenuShown = false;
       }
     },
     handleCanvasMouseMove(event) {
@@ -112,8 +114,11 @@ export default {
     },
     handleCanvasMouseUp(event) {
       if (this.drawingElement) {
+        // Removing preview box
         event.target.removeChild(this.currentPreviewBox);
         this.currentPreviewBox = null;
+        // Setting default color
+        this.currentBoxProps.color = "red";
         this.drawingBoxes.push({
           ...this.currentBoxProps,
           id: this.drawingBoxes.length
@@ -130,13 +135,14 @@ export default {
       this.contextMenuShown = true;
       this.contextMenuProps = details;
       delete this.contextMenuProps.__ob__;
-      let content;
-      if (this.contextMenuProps.target === "box") {
-        content = <Box />;
-      } else {
-        throw Error("Unknown ContextMenu target");
-      }
-      this.contextMenuContent = content;
+    },
+    handleDrawingBoxColorChange(details) {
+      const changedBox = this.drawingBoxes.find(
+        drawingBox => drawingBox.id === details.id
+      );
+      const boxesArrayIndex = this.drawingBoxes.indexOf(changedBox);
+      changedBox.color = details.color;
+      this.drawingBoxes[boxesArrayIndex] = changedBox;
     }
   }
 };
