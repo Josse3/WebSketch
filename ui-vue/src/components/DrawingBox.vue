@@ -1,7 +1,7 @@
 <template>
   <div
     class="drawing-box"
-    :style="{top, left, width, height}"
+    :style="{top, left, width, height, backgroundColor: color}"
     v-on:contextmenu="handleRightClick"
     v-on:click="handleLeftClick"
   ></div>
@@ -14,7 +14,9 @@ export default {
     top: String,
     left: String,
     width: String,
-    height: String
+    height: String,
+    color: String,
+    id: Number
   },
   data() {
     return {
@@ -27,7 +29,11 @@ export default {
       this.contextMenuShown = true;
       this.contextMenuPos.x = event.x + "px";
       this.contextMenuPos.y = event.y + "px";
-      this.$emit("show-contextmenu", { ...this.contextMenuPos, target: "box" });
+      this.$emit("show-contextmenu", {
+        ...this.contextMenuPos,
+        target: "box",
+        id: this.id
+      });
     },
     handleLeftClick(event) {
       if (event.which === 1) {
@@ -43,7 +49,6 @@ export default {
 <style scoped>
 .drawing-box {
   height: 5px;
-  background-color: red;
   position: relative;
 }
 </style>
