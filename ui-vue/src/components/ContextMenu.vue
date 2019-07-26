@@ -1,14 +1,27 @@
 <template>
-  <div class="context-menu" :style="{ left: x, top: y }">{{content}}</div>
+  <div class="context-menu" :style="{ left: x, top: y }">
+    <Box v-if="content === 'box'" :id="drawingboxId" @color-change="handleColorChange" />
+  </div>
 </template>
 
 <script>
+import Box from "@/components/ContextMenu-contents/Box.vue";
+
 export default {
   name: "ContextMenu",
   props: {
     x: String,
     y: String,
-    content: Object
+    content: String,
+    drawingboxId: Number
+  },
+  components: {
+    Box
+  },
+  methods: {
+    handleColorChange(details) {
+      this.$emit("color-change", details);
+    }
   }
 };
 </script>
@@ -17,8 +30,7 @@ export default {
 .context-menu {
   position: absolute;
   background-color: grey;
-  height: 50px;
-  width: 50px;
+  padding: 1rem 0.25rem;
 }
 </style>
 
