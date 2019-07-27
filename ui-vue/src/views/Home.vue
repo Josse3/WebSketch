@@ -5,6 +5,15 @@
       <h1>WebSketch</h1>
       <h2>Drawing a website has never been easier</h2>
     </div>
+    <div class="transition">
+      <div
+        class="transition-fragment" 
+        v-for="color of colors" 
+        :key="colors.indexOf(color)" 
+        :style="{backgroundColor:  `rgb(${color[0]}, ${color[1]}, ${color[2]})`}"
+      >
+      </div>
+    </div>
     <div class="get-started">
       <h1 class="button-row-header">Get sketching right away!</h1>
       <div class="button-row">
@@ -17,16 +26,34 @@
 
 <script>
 export default {
-  name: "home"
+  name: "home",
+  data() {
+    return {
+      colors: []
+    }
+  },
+  created() {
+    for (let i = 0; i < 160; i++) {
+      this.colors[i] = [
+        74 + i <= 173 ? 74 + i : 173,
+        177 + i <= 216 ? 177 + i : 216,
+        74 + i <= 230 ? 74 + i : 230
+      ];
+    }
+  }
 };
 </script>
 
 <style scoped>
+.home {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
 .banner,
 .get-started {
-  height: 50vh;
   text-align: center;
-  padding: 2rem 0;
 }
 
 .banner {
@@ -38,8 +65,23 @@ export default {
   margin: 3rem auto;
 }
 
+.banner h1, 
+.banner h2 {
+  color: white;
+}
+
+.banner h1 {
+  text-transform: uppercase;
+}
+
+.transition-fragment {
+  height: 1px;
+}
+
 .get-started {
   background-color: lightblue;
+  padding-bottom: 6.5vh;
+  min-height: 34vh;
 }
 
 .get-started .button-row {
