@@ -1,10 +1,11 @@
 <template>
-  <div class="context-menu" :style="{ left: x, top: y }">
+  <div class="context-menu" :style="{ left: x, top: y, zIndex: minLayer + 1000 }">
     <Box 
       v-if="content === 'box'" 
       :id="drawingboxId" 
       @color-change="handleColorChange" 
-      @delete-box="handleDeleteBox" 
+      @delete-box="handleDeleteBox"
+      @change-layer="handleLayerChange"
     />
   </div>
 </template>
@@ -18,7 +19,8 @@ export default {
     x: String,
     y: String,
     content: String,
-    drawingboxId: Number
+    drawingboxId: Number,
+    minLayer: Number
   },
   components: {
     Box
@@ -29,6 +31,9 @@ export default {
     },
     handleDeleteBox(details) {
       this.$emit('delete-box', details);
+    },
+    handleLayerChange(details) {
+      this.$emit('change-layer', details);
     }
   }
 };
