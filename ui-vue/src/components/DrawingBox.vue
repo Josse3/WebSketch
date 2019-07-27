@@ -1,7 +1,7 @@
 <template>
   <div
     class="drawing-box"
-    :style="{top: top + offset + 'px', left, width, height, backgroundColor: color}"
+    :style="{top: top + offset + 'px', left, width, height, backgroundColor: color, zIndex: layer}"
     v-on:contextmenu="handleRightClick"
     v-on:click="handleLeftClick"
   ></div>
@@ -17,6 +17,7 @@ export default {
     width: String,
     height: String,
     color: String,
+    layer: Number,
     id: Number
   },
   data() {
