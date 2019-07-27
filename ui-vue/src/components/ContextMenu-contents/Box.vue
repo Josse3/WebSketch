@@ -1,9 +1,13 @@
 <template>
   <div class="context-menu-content-box">
-    <div class="color-preview" :style="{backgroundColor: inputtedColor}"></div>
-    <input type="text" placeholder="color" @change="function(e) {inputtedColor = e.target.value}" />
-    <input type="submit" value="Apply" @click="handleColorSubmit" />
-    <span>Delete</span>
+    <div class="color-picker">
+      <div class="color-preview" :style="{backgroundColor: inputtedColor}"></div>
+        <input type="text" placeholder="color" @change="function(e) {inputtedColor = e.target.value}" />
+        <input type="submit" value="Apply" @click="handleColorSubmit" />
+      </div>
+    <ul>
+      <li @click="deleteBox">Delete</li>
+    </ul>
   </div>
 </template>
 
@@ -21,6 +25,9 @@ export default {
   methods: {
     handleColorSubmit() {
       this.$emit("color-change", { color: this.inputtedColor, id: this.id });
+    },
+    deleteBox() {
+      this.$emit('delete-box', this.id);
     }
   }
 };
@@ -30,6 +37,10 @@ export default {
 .context-menu-content-box {
   width: 10rem;
   text-align: center;
+}
+
+.color-picker {
+  padding: 0 .25rem;
 }
 
 .color-preview {
@@ -58,7 +69,12 @@ span:hover {
   color: white;
 }
 
-span {
-  margin-top: 50px;
+li {
+  list-style: none;
+  cursor: pointer;
+}
+
+li:hover {
+  background-color: rgb(180, 161, 161);
 }
 </style>
