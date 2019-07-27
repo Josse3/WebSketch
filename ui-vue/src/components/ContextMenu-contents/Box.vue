@@ -7,6 +7,8 @@
       </div>
     <ul>
       <li @click="deleteBox">Delete</li>
+      <li @click="changeLayer('higher')">Layer up</li>
+      <li @click="changeLayer('lower')">Layer down</li>
     </ul>
   </div>
 </template>
@@ -28,6 +30,9 @@ export default {
     },
     deleteBox() {
       this.$emit('delete-box', this.id);
+    },
+    changeLayer(direction) {
+      this.$emit('change-layer', {id: this.id, direction});
     }
   }
 };
