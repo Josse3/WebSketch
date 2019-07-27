@@ -11,6 +11,7 @@
         v-for="boxObj in drawingBoxes"
         :key="boxObj.id"
         :top="boxObj.top"
+        :offset="boxObj.offset"
         :left="boxObj.left"
         :width="boxObj.width"
         :height="boxObj.height"
@@ -25,6 +26,7 @@
         :content="this.contextMenuProps.target"
         :drawingboxId="this.contextMenuProps.id"
         @color-change="this.handleDrawingBoxColorChange"
+        @delete-box="handleDeleteBox"
       />
     </div>
   </div>
@@ -73,7 +75,8 @@ export default {
             this.occupiedY}px`;
           // Passing them in as left/top values on a position="relative" <div>
           boxProps.left = left;
-          boxProps.top = top;
+          boxProps.top = Number(top.replace('px', '')) - this.occupiedY;
+          boxProps.offset = this.occupiedY;
           // Creating a preview box with the same coordinates
           const previewBox = document.createElement("div");
           previewBox.className = "preview-box";
@@ -94,7 +97,7 @@ export default {
     handleCanvasMouseMove(event) {
       if (this.drawingElement) {
         const boxX = Number(this.currentBoxProps.left.replace("px", ""));
-        const boxY = Number(this.currentBoxProps.top.replace("px", ""));
+        const boxY = this.currentBoxProps.top + this.occupiedY;
         // Calculating mouse position compared to the first mouse position as width and height
         const width =
           event.clientX - this.currentElementContainer.x - boxX + "px";
@@ -143,6 +146,11 @@ export default {
       const boxesArrayIndex = this.drawingBoxes.indexOf(changedBox);
       changedBox.color = details.color;
       this.drawingBoxes[boxesArrayIndex] = changedBox;
+    },
+    handleDeleteBox(details) {
+      const offsetToRemove = Number(this.drawingBoxes[details].height.replace('px', ''));
+      this.drawingBoxes.splice(details, 1);
+      this.drawingBoxes.forEach(drawingBox => drawingBox.offset += offsetToRemove);
     }
   }
 };
