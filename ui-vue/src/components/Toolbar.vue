@@ -33,7 +33,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 4rem;
-  width: 80vw;
+  width: 100vw;
   margin: auto;
   background-color: rgba(80, 80, 80, 0.623);
 }
