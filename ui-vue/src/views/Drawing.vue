@@ -1,11 +1,14 @@
 <template>
   <div class="drawing">
-    <Toolbar v-on:select-tool="handleToolSelect" />
+    <Toolbar 
+      v-on:select-tool="handleToolSelect" 
+      @change-canvas-color="handleCanvasColorChange" />
     <div
       class="canvas"
       v-on:mousedown="handleCanvasMouseDown"
       v-on:mouseup="handleCanvasMouseUp"
       v-on:mousemove="handleCanvasMouseMove"
+      :style="{backgroundColor: this.canvasColor}"
     >
       <DrawingBox
         v-for="boxObj in drawingBoxes"
@@ -16,6 +19,7 @@
         :width="boxObj.width"
         :height="boxObj.height"
         :color="boxObj.color"
+        :layer="boxObj.layer"
         :id="boxObj.id"
         @show-contextmenu="handleContextMenuShow"
       />
@@ -25,8 +29,10 @@
         :y="this.contextMenuProps.y"
         :content="this.contextMenuProps.target"
         :drawingboxId="this.contextMenuProps.id"
+        :minLayer="currentHighestLayer"
         @color-change="this.handleDrawingBoxColorChange"
         @delete-box="handleDeleteBox"
+        @change-layer="handleLayerChange"
       />
     </div>
   </div>
@@ -46,6 +52,7 @@ export default {
   },
   data() {
     return {
+      canvasColor: '#ccc', // Background color of the canvas
       currentTool: null, // current method on the toolbar
       drawingElement: false, // boolean defining whether or not an element is being drawn
       currentBoxProps: null, // Properties of the box currently being drawn
@@ -54,7 +61,8 @@ export default {
       drawingBoxes: [], // Array of drawn boxes
       currentPreviewBox: null, // HTML object of the current preview box
       contextMenuShown: false, // Boolean defining wheather or not the context menu is shown
-      contextMenuProps: {} // Object containing x and y coordinates as well as content of the context menu
+      contextMenuProps: {}, // Object containing x and y coordinates as well as content of the context menu
+      currentHighestLayer: 0 // Number defining the current highest layer (z-index);
     };
   },
   methods: {
@@ -87,6 +95,9 @@ export default {
           // Adding a default height and width in case mouse won't be moved
           boxProps.width = "5px";
           boxProps.height = "5px";
+          // Adding a default layer (z-index)
+          boxProps.layer = this.currentHighestLayer;
+          this.currentHighestLayer++;
           // Saving created element to data()
           this.currentBoxProps = boxProps;
         }
@@ -151,6 +162,29 @@ export default {
       const offsetToRemove = Number(this.drawingBoxes[details].height.replace('px', ''));
       this.drawingBoxes.splice(details, 1);
       this.drawingBoxes.forEach(drawingBox => drawingBox.offset += offsetToRemove);
+    },
+    handleLayerChange(details) {
+      const usedLayers = this.drawingBoxes.map(box => box.layer);
+      console.log(this.drawingBoxes, usedLayers);
+      const currentIndex = usedLayers.indexOf(this.drawingBoxes[details.id].layer);
+      let newLayer;
+      if (details.direction === 'higher') {
+        const nextLayer = usedLayers[currentIndex + 1];
+        newLayer = !Number.isNaN(nextLayer) ? nextLayer + 1 : usedLayers[usedLayers.length - 1] + 1;
+      } else if (details.direction === 'lower') {
+        const previousLayer = usedLayers[currentIndex - 1];
+        newLayer = !Number.isNaN(previousLayer) ? previousLayer - 1 : usedLayers[0] - 1;
+      } else if (details.direction === 'highest') {
+        newLayer = usedLayers[usedLayer.length - 1] + 1;
+      } else if (details.direction === 'lowest') {
+        newLayer = usedLayers[0] - 1;
+      } else {
+        throw Error('Invalid layer change direction');
+      }
+      this.drawingBoxes[details.id].layer = newLayer;
+    },
+    handleCanvasColorChange(details) {
+      this.canvasColor = details;
     }
   }
 };
@@ -161,15 +195,11 @@ export default {
   width: 100vw;
   height: 100vh;
   background-color: lightblue;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .canvas {
-  width: 90%;
-  height: 90%;
-  background-color: rgb(70, 70, 235);
+  width: 100vw;
+  height: 100vh;
 }
 </style>
 
