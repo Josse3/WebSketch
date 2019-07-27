@@ -1,7 +1,7 @@
 <template>
   <div
     class="drawing-box"
-    :style="{top, left, width, height, backgroundColor: color}"
+    :style="{top: top + offset + 'px', left, width, height, backgroundColor: color}"
     v-on:contextmenu="handleRightClick"
     v-on:click="handleLeftClick"
   ></div>
@@ -11,7 +11,8 @@
 export default {
   name: "DrawingBox",
   props: {
-    top: String,
+    top: Number,
+    offset: Number,
     left: String,
     width: String,
     height: String,
