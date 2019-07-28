@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="get-started">
-      <h1 class="button-row-header">Get sketching right away!</h1>
+      <h1 class="button-row-header">Get sketching:</h1>
       <div class="button-row">
         <button class="login">Log In</button>
         <button class="signup">Sign Up</button>
@@ -45,6 +45,11 @@ export default {
 </script>
 
 <style scoped>
+h1 {
+  font-family: 'Merriweather Sans';
+  font-weight: bold;
+}
+
 .home {
   display: flex;
   flex-direction: column;
@@ -84,6 +89,10 @@ export default {
   min-height: 34vh;
 }
 
+.get-started h1 {
+  margin: 3rem auto;
+}
+
 .get-started .button-row {
   width: 30%;
   margin: 2rem auto 0 auto;
@@ -92,21 +101,29 @@ export default {
 }
 
 .get-started button {
-  padding: 1rem 3rem;
+  height: 6rem;
+  width: 12rem;
+  font-size: 2rem;
   cursor: pointer;
-  border-width: 3px;
-  border-radius: 1rem;
-  font-size: 1.2rem;
+  border: none; 
 }
 
 .get-started button.login {
   background-color: white;
-  border-color: rgb(32, 32, 161);
+}
+
+.get-started button.login:hover {
+  background-color: rgb(32, 32, 161);
+  color: white;
 }
 
 .get-started button.signup {
   background-color: rgb(32, 32, 161);
-  border-color: white;
   color: white;
+}
+
+.get-started button.signup:hover {
+  background-color: white;
+  color: black;
 }
 </style>
