@@ -7,18 +7,20 @@
     </div>
     <div class="transition">
       <div
-        class="transition-fragment" 
-        v-for="color of colors" 
-        :key="colors.indexOf(color)" 
+        class="transition-fragment"
+        v-for="color of colors"
+        :key="colors.indexOf(color)"
         :style="{backgroundColor:  `rgb(${color[0]}, ${color[1]}, ${color[2]})`}"
-      >
-      </div>
+      ></div>
     </div>
     <div class="get-started">
       <h1 class="button-row-header">Get sketching:</h1>
-      <div class="button-row">
+      <div class="button-row" v-if="!onGitHub">
         <button class="login">Log In</button>
         <button class="signup">Sign Up</button>
+      </div>
+      <div class="github-button" v-if="onGitHub">
+        <button>Go to the drawing canvas &#x2192;</button>
       </div>
     </div>
   </div>
@@ -29,8 +31,9 @@ export default {
   name: "home",
   data() {
     return {
-      colors: []
-    }
+      colors: [],
+      onGitHub: window.location.href === "https://josse3.github.io/WebSketch/#/"
+    };
   },
   created() {
     for (let i = 0; i < 160; i++) {
@@ -46,7 +49,7 @@ export default {
 
 <style scoped>
 h1 {
-  font-family: 'Merriweather Sans';
+  font-family: "Merriweather Sans";
   font-weight: bold;
 }
 
@@ -59,6 +62,7 @@ h1 {
 .banner,
 .get-started {
   text-align: center;
+  min-height: 45vh;
 }
 
 .banner {
@@ -70,13 +74,17 @@ h1 {
   margin: 3rem auto;
 }
 
-.banner h1, 
+.banner h1,
 .banner h2 {
   color: white;
 }
 
 .banner h1 {
   text-transform: uppercase;
+}
+
+.transition {
+  min-height: 10vh;
 }
 
 .transition-fragment {
@@ -105,7 +113,16 @@ h1 {
   width: 12rem;
   font-size: 2rem;
   cursor: pointer;
-  border: none; 
+  border: none;
+}
+
+.github-button button {
+  width: 30rem;
+  background-color: orange;
+}
+
+.github-button button:hover {
+  background-color: white;
 }
 
 .get-started button.login {
