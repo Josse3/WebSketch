@@ -17,7 +17,9 @@
       <h1 class="button-row-header">Get sketching:</h1>
       <div class="button-row" v-if="!onGitHub">
         <button class="login">Log In</button>
-        <button class="signup">Sign Up</button>
+        <a href="/#/signup">
+          <button class="signup">Sign Up</button>
+        </a>
       </div>
       <div class="github-button" v-if="onGitHub">
         <button>Go to the drawing canvas &#x2192;</button>
@@ -66,7 +68,7 @@ h1 {
 }
 
 .banner {
-  background-color: rgb(74, 177, 74);
+  background-color: var(--ui-color-primary);
 }
 
 .banner img {
@@ -92,7 +94,7 @@ h1 {
 }
 
 .get-started {
-  background-color: lightblue;
+  background-color: var(--ui-color-secondary);
   padding-bottom: 6.5vh;
   min-height: 34vh;
 }
