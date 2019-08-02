@@ -25,21 +25,24 @@
         :id="boxObj.id"
         @show-contextmenu="handleContextMenuShow"
       />
+
       <DrawingPreview
-        v-if="drawingElement"
+        v-if="drawingElement === 'box'"
         :top="currentPreviewBoxProps.top"
         :left="currentPreviewBoxProps.left"
         :width="currentPreviewBoxProps.width"
         :height="currentPreviewBoxProps.height"
       />
+
+      <TextPreview v-if="drawingElement === 'text'" />
       <ContextMenu
         v-if="contextMenuShown"
-        :x="this.contextMenuProps.x"
-        :y="this.contextMenuProps.y"
-        :content="this.contextMenuProps.target"
-        :drawingboxId="this.contextMenuProps.id"
+        :x="contextMenuProps.x"
+        :y="contextMenuProps.y"
+        :content="contextMenuProps.target"
+        :drawingboxId="contextMenuProps.id"
         :minLayer="currentHighestLayer"
-        @color-change="this.handleDrawingBoxColorChange"
+        @color-change="handleDrawingBoxColorChange"
         @delete-box="handleDeleteBox"
         @change-layer="handleLayerChange"
       />
@@ -49,8 +52,12 @@
 
 <script>
 import Toolbar from "@/components/Toolbar.vue";
+// Drawing elements ('structures' that can appear on the canvas)
 import DrawingBox from "@/components/DrawingElements/DrawingBox.vue";
+// Preview boxes ('structures' that preview what exactly you're drawing)
 import DrawingPreview from "@/components/DrawingPreviews/DrawingPreview.vue";
+import TextPreview from "@/components/DrawingPreviews/TextPreview.vue";
+
 import ContextMenu from "@/components/ContextMenu.vue";
 
 export default {
@@ -65,7 +72,7 @@ export default {
     return {
       canvasColor: "#ccc", // Background color of the canvas
       currentTool: null, // current method on the toolbar
-      drawingElement: false, // boolean defining whether or not an element is being drawn
+      drawingElement: null, // string defining which element is being drawn
       currentBoxProps: null, // Properties of the box currently being drawn
       currentElementContainer: null, // Container of the current element to calculate coordinates
       occupiedY: 0, // Due to HTML nature, the elements get pushed further and further down when more appear. This variable tracks how much, to oppose it.
@@ -94,7 +101,7 @@ export default {
           this.occupiedY}px`;
 
         if (this.currentTool === "box") {
-          this.drawingElement = true;
+          this.drawingElement = "box";
           const boxProps = {};
           // Passing them in as left/top values on a position="relative" <div>
           boxProps.left = left;
@@ -154,7 +161,7 @@ export default {
         const boxHeight = Number(this.currentBoxProps.height.replace("px", ""));
         this.occupiedY += boxHeight;
         // Reset
-        this.drawingElement = false;
+        this.drawingElement = null;
         this.currentBoxProps = {};
       }
     },
