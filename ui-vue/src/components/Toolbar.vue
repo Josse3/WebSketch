@@ -1,6 +1,8 @@
 <template>
-  <div class="toolbar">
-    <div class="save-button"><i class="far fa-save" /></div>
+  <div class="toolbar" :style="{zIndex: minLayer + 999}">
+    <div class="save-button">
+      <i class="far fa-save" />
+    </div>
     <div class="tools">
       <p v-for="tool in tools" v-bind:key="tool.id" v-on:click="selectTool(tool.id)">
         <i :class="tool.icon" />
@@ -15,13 +17,16 @@
 <script>
 export default {
   name: "Toolbar",
+  props: {
+    minLayer: Number
+  },
   data() {
     return {
       tools: [
         { icon: "far fa-square", id: "box" },
         { icon: "glyphicon glyphicon-text-size", id: "text" }
       ],
-      canvasColor: ''
+      canvasColor: ""
     };
   },
   methods: {
@@ -29,7 +34,7 @@ export default {
       this.$emit("select-tool", tool);
     },
     updateCanvasColor() {
-      this.$emit('change-canvas-color', this.canvasColor)
+      this.$emit("change-canvas-color", this.canvasColor);
     }
   }
 };
@@ -79,9 +84,9 @@ export default {
 }
 
 input {
-  padding: .25em .5em;
+  padding: 0.25em 0.5em;
   border: none;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   width: 10rem;
 }
 </style>
