@@ -49,8 +49,8 @@
 
 <script>
 import Toolbar from "@/components/Toolbar.vue";
-import DrawingBox from "@/components/DrawingBox.vue";
-import DrawingPreview from "@/components/DrawingPreview.vue";
+import DrawingBox from "@/components/DrawingElements/DrawingBox.vue";
+import DrawingPreview from "@/components/DrawingPreviews/DrawingPreview.vue";
 import ContextMenu from "@/components/ContextMenu.vue";
 
 export default {
@@ -82,6 +82,11 @@ export default {
     },
     handleCanvasMouseDown(event) {
       if (this.currentTool && event.which === 1 && !this.contextMenuShown) {
+        // Creating drawn element container to calculate coordinates
+        this.currentElementContainer =
+          event.path.length > 7
+            ? event.srcElement.parentNode.getBoundingClientRect()
+            : event.target.getBoundingClientRect();
         // Calculating coordinates
         const left = `${event.clientX - this.currentElementContainer.x}px`;
         const top = `${event.clientY -
@@ -90,11 +95,6 @@ export default {
 
         if (this.currentTool === "box") {
           this.drawingElement = true;
-          // Creating drawn element and its container (to calculate coordinates)
-          this.currentElementContainer =
-            event.path.length > 7
-              ? event.srcElement.parentNode.getBoundingClientRect()
-              : event.target.getBoundingClientRect();
           const boxProps = {};
           // Passing them in as left/top values on a position="relative" <div>
           boxProps.left = left;
@@ -113,6 +113,7 @@ export default {
           this.currentHighestLayer++;
           // Saving created element to data()
           this.currentBoxProps = boxProps;
+        } else if (this.currentTool === "text") {
         }
       } else if (this.contextMenuShown && event.path.length <= 8) {
         this.contextMenuShown = false;
