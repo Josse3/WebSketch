@@ -51,7 +51,7 @@ export default {
 
 <style scoped>
 h1 {
-  font-family: "Merriweather Sans";
+  font-family: "Merriweather Sans", sans-serif;
   font-weight: bold;
 }
 
