@@ -34,7 +34,11 @@
         :height="currentPreviewBoxProps.height"
       />
 
-      <TextPreview v-if="drawingElement === 'text'" />
+      <TextPreview
+        v-if="drawingElement === 'text'"
+        :left="currentPreviewBoxProps.left"
+        :top="currentPreviewBoxProps.top"
+      />
       <ContextMenu
         v-if="contextMenuShown"
         :x="contextMenuProps.x"
@@ -66,6 +70,7 @@ export default {
     Toolbar,
     DrawingBox,
     DrawingPreview,
+    TextPreview,
     ContextMenu
   },
   data() {
@@ -78,6 +83,7 @@ export default {
       occupiedY: 0, // Due to HTML nature, the elements get pushed further and further down when more appear. This variable tracks how much, to oppose it.
       drawingBoxes: [], // Array of drawn boxes
       currentPreviewBoxProps: {}, // Object with properties of the current preview box
+      textBoxes: [], // Array of drawn text boxes
       contextMenuShown: false, // Boolean defining wheather or not the context menu is shown
       contextMenuProps: {}, // Object containing x and y coordinates as well as content of the context menu
       currentHighestLayer: 0 // Number defining the current highest layer (z-index);
@@ -99,6 +105,9 @@ export default {
         const top = `${event.clientY -
           this.currentElementContainer.y -
           this.occupiedY}px`;
+        // Setting the preview box coordinates
+        this.currentPreviewBoxProps.left = left;
+        this.currentPreviewBoxProps.top = top;
 
         if (this.currentTool === "box") {
           this.drawingElement = "box";
@@ -107,9 +116,6 @@ export default {
           boxProps.left = left;
           boxProps.top = Number(top.replace("px", "")) - this.occupiedY;
           boxProps.offset = this.occupiedY;
-          // Setting the preview box coordinates
-          this.currentPreviewBoxProps.left = left;
-          this.currentPreviewBoxProps.top = top;
           // Adding a default height and width in case mouse won't be moved
           boxProps.width = "5px";
           boxProps.height = "5px";
@@ -121,13 +127,14 @@ export default {
           // Saving created element to data()
           this.currentBoxProps = boxProps;
         } else if (this.currentTool === "text") {
+          this.drawingElement = "text";
         }
       } else if (this.contextMenuShown && event.path.length <= 8) {
         this.contextMenuShown = false;
       }
     },
     handleCanvasMouseMove(event) {
-      if (this.drawingElement) {
+      if (this.drawingElement === "box") {
         const boxX = Number(this.currentBoxProps.left.replace("px", ""));
         const boxY = this.currentBoxProps.top + this.occupiedY;
         // Calculating mouse position compared to the first mouse position as width and height
@@ -148,7 +155,7 @@ export default {
       }
     },
     handleCanvasMouseUp(event) {
-      if (this.drawingElement) {
+      if (this.drawingElement === "box") {
         // Removing preview box
         this.currentPreviewBoxProps = {};
         // Setting default color
