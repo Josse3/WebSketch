@@ -6,7 +6,7 @@
         <p>{{fieldObj.name}}</p>
         <input
           :type="fieldObj.hidden ? 'password' : 'text'"
-          disabled="false"
+          :disabled="loggedIn"
           v-model="userInput[fieldObj.name]"
         />
         <div class="error input-error" v-if="fieldObj.error">{{fieldObj.error}}</div>
